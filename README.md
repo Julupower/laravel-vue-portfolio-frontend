@@ -1,44 +1,52 @@
-# laravel-vue-portfolio-frontend
+# Laravel & Vue 3 Enterprise Portfolio (Frontend)
 
-This template should help get you started developing with Vue 3 in Vite.
+A decoupled, modern Single Page Application (SPA) built with Vue 3, Vite, and Pinia, interfacing with a Laravel 11 REST API.
 
-## Recommended IDE Setup
+## 🛠 Tech Stack
 
-[VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+- **Framework:** Vue 3 (Composition API `<script setup>`)
+- **Build Tool:** Vite
+- **State Management:** Pinia
+- **Routing:** Vue Router
+- **HTTP Client:** Axios
+- **Code Quality:** ESLint / Oxlint, Prettier
 
-## Recommended Browser Setup
+---
 
-- Chromium-based browsers (Chrome, Edge, Brave, etc.):
-  - [Vue.js devtools](https://chromewebstore.google.com/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd)
-  - [Turn on Custom Object Formatter in Chrome DevTools](http://bit.ly/object-formatters)
-- Firefox:
-  - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
-  - [Turn on Custom Object Formatter in Firefox DevTools](https://fxdx.dev/firefox-devtools-custom-object-formatters/)
+## 🚀 Architectural Roadmap & Implementation Status
 
-## Customize configuration
+### Phase 1: Foundation & Base Setup
+- [x] Vue 3 SPA scaffolding with Vite and Composition API
+- [x] Centralized Axios HTTP client configuration
+- [x] Vite development server proxying to bypass local CORS boundaries
+- [x] Clean base layout and global CSS resets
 
-See [Vite Configuration Reference](https://vite.dev/config/).
+### Phase 2: State Management & Data Layer
+- [ ] Centralized Pinia store implementation (`useProjectStore`)
+- [ ] Asynchronous API state handling (loading, success, error boundaries)
+- [ ] Reactive state binding across view components
 
-## Project Setup
+### Phase 3: Routing & Dynamic Views
+- [ ] Vue Router setup for portfolio showcase (`/projects`)
+- [ ] Single project detail view routes (`/projects/:id`)
+- [ ] Dynamic navigation and route transitions
 
-```sh
-npm install
-```
+### Phase 4: Authentication & Security
+- [ ] Laravel Sanctum CSRF cookie initialization
+- [ ] Stateful SPA authentication flow (Login/Logout/Session persistence)
+- [ ] Route navigation guards for protected admin operations
 
-### Compile and Hot-Reload for Development
+---
 
-```sh
+## 💻 Local Development Setup
+
+```bash
+# 1. Clone repository
+git clone [https://github.com/Julupower/laravel-vue-portfolio-frontend.git](https://github.com/Julupower/laravel-vue-portfolio-frontend.git)
+
+# 2. Install dependencies
+cd laravel-vue-portfolio-frontend
+npm install --legacy-peer-deps
+
+# 3. Start development server
 npm run dev
-```
-
-### Compile and Minify for Production
-
-```sh
-npm run build
-```
-
-### Lint with [ESLint](https://eslint.org/)
-
-```sh
-npm run lint
-```
