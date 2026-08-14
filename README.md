@@ -22,9 +22,9 @@ A decoupled, modern Single Page Application (SPA) built with Vue 3, Vite, and Pi
 - [x] Clean base layout and global CSS resets
 
 ### Phase 2: State Management & Data Layer
-- [ ] Centralized Pinia store implementation (`useProjectStore`)
-- [ ] Asynchronous API state handling (loading, success, error boundaries)
-- [ ] Reactive state binding across view components
+- [x] Centralized Pinia store implementation (`useProjectStore`)
+- [x] Asynchronous API state handling (loading, success, error boundaries)
+- [x] Reactive state binding across view components
 
 ### Phase 3: Routing & Dynamic Views
 - [ ] Vue Router setup for portfolio showcase (`/projects`)
