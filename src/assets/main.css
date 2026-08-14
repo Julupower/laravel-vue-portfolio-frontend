@@ -1,4 +1,4 @@
-@import './base.css';
+/*@import './base.css';
 
 #app {
   max-width: 1280px;
@@ -32,4 +32,19 @@ a,
     grid-template-columns: 1fr 1fr;
     padding: 0 2rem;
   }
+}*/
+
+
+/* Base Layout Reset */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  color: #2c3e50;
+  background-color: #f8fafc;
+  line-height: 1.6;
 }
