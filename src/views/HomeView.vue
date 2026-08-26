@@ -1,6 +1,7 @@
 <script setup>
 import { onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
+import { RouterLink } from 'vue-router'
 import { useProjectStore } from '@/stores/projects'
 
 const projectStore = useProjectStore()
@@ -25,7 +26,12 @@ onMounted(() => {
         :key="project.id" 
         style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1.25rem; margin-bottom: 1rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05);"
       >
-        <h2 style="margin-bottom: 0.5rem; color: #1a202c;">{{ project.title }}</h2>
+        <RouterLink 
+          :to="{ name: 'project-detail', params: { id: project.id } }" 
+          style="text-decoration: none;"
+        >
+          <h2 style="margin-bottom: 0.5rem; color: #2b6cb0;">{{ project.title }}</h2>
+        </RouterLink>
         <p style="color: #4a5568;">{{ project.description }}</p>
       </li>
     </ul>
