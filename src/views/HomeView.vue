@@ -2,9 +2,9 @@
 import { onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
 import { RouterLink } from 'vue-router'
-import { useProjectStore } from '@/stores/projects'
+import { useProjectsStore } from '@/stores/projects'
 
-const projectStore = useProjectStore()
+const projectStore = useProjectsStore()
 const { projects, loading, error } = storeToRefs(projectStore)
 
 onMounted(() => {
@@ -18,16 +18,16 @@ onMounted(() => {
 
     <div v-if="loading">Loading projects from backend...</div>
     <div v-else-if="error" style="color: red;">{{ error }}</div>
-    <div v-else-if="projects.length === 0">No projects available.</div>
+    <div v-else-if="!projects || projects.length === 0">No projects available.</div>
 
     <ul v-else style="list-style: none; padding: 0;">
-      <li 
-        v-for="project in projects" 
-        :key="project.id" 
+      <li
+        v-for="project in projects"
+        :key="project.id || project.slug || project.uuid"
         style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1.25rem; margin-bottom: 1rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05);"
       >
-        <RouterLink 
-          :to="{ name: 'project-detail', params: { id: project.id } }" 
+        <RouterLink
+          :to="{ name: 'project-detail', params: { id: project.id ?? project.slug ?? 1 } }"
           style="text-decoration: none;"
         >
           <h2 style="margin-bottom: 0.5rem; color: #2b6cb0;">{{ project.title }}</h2>
