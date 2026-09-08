@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import api from '@/services/api'
+import axios from 'axios'
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
@@ -10,8 +11,7 @@ export const useAuthStore = defineStore('auth', {
 
   actions: {
     async getCsrfCookie() {
-      // Calls Sanctum CSRF initialization endpoint before POST requests
-      await api.get('/sanctum/csrf-cookie')
+      await axios.get('http://localhost/sanctum/csrf-cookie', { withCredentials: true })
     },
 
     async login(credentials) {
@@ -19,10 +19,12 @@ export const useAuthStore = defineStore('auth', {
       this.error = null
       try {
         await this.getCsrfCookie()
-        await api.post('/login', credentials)
+        await axios.post('http://localhost/login', credentials, { withCredentials: true })
         await this.fetchUser()
+        return true
       } catch (err) {
-        this.error = err.response?.data?.message || 'Login failed.'
+        this.error = err.response?.data?.message || 'Login failed'
+        throw err
       } finally {
         this.loading = false
       }
@@ -30,7 +32,8 @@ export const useAuthStore = defineStore('auth', {
 
     async fetchUser() {
       try {
-        const response = await api.get('/user')
+        // Target full path to hit API middleware
+        const response = await api.get('http://localhost/api/user')
         this.user = response.data
       } catch (err) {
         this.user = null
@@ -39,7 +42,7 @@ export const useAuthStore = defineStore('auth', {
 
     async logout() {
       try {
-        await api.post('/logout')
+        await axios.post('http://localhost/logout', {}, { withCredentials: true })
       } finally {
         this.user = null
       }
