@@ -1,44 +1,29 @@
 <script setup>
-import { onMounted, ref } from 'vue'
-import { useRoute } from 'vue-router'
-import { useProjectsStore } from '@/stores/projects'
+import { ref, onMounted } from 'vue'
+import ProjectCard from '@/components/ProjectCard.vue'
 
-const route = useRoute()
-const projectsStore = useProjectsStore()
-const project = ref(null)
-const loading = ref(true)
-const error = ref(null)
+const projects = ref([])
 
 onMounted(async () => {
   try {
-    // If projects aren't loaded yet, fetch them
-    if (projectsStore.projects.length === 0) {
-      await projectsStore.fetchProjects()
-    }
-    
-    // Find the specific project by route parameter
-    const found = projectsStore.projects.find(p => p.id === parseInt(route.params.id))
-    if (found) {
-      project.value = found
-    } else {
-      error.value = 'Project not found.'
-    }
-  } catch (err) {
-    error.value = 'Failed to load project details.'
-  } finally {
-    loading.value = false
+    const response = await fetch('http://localhost/api/projects')
+    projects.value = await response.json()
+  } catch (error) {
+    console.error('Error fetching projects:', error)
   }
 })
 </script>
 
 <template>
-  <main style="padding: 2rem;">
-    <div v-if="loading">Loading project details...</div>
-    <div v-else-if="error" style="color: red;">{{ error }}</div>
-    
-    <article v-else-if="project">
-      <h1 style="margin-bottom: 1rem;">{{ project.title }}</h1>
-      <p style="color: #4a5568; line-height: 1.6;">{{ project.description }}</p>
-    </article>
+  <main class="container mx-auto p-6">
+    <h1 class="text-3xl font-bold mb-6">Project Portfolio</h1>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <ProjectCard 
+        v-for="project in projects" 
+        :key="project.id" 
+        :project="project" 
+      />
+    </div>
   </main>
 </template>
