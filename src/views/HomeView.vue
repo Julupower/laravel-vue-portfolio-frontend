@@ -1,39 +1,29 @@
 <script setup>
-import { onMounted } from 'vue'
-import { storeToRefs } from 'pinia'
-import { RouterLink } from 'vue-router'
-import { useProjectsStore } from '@/stores/projects'
+import { ref, onMounted } from 'vue'
+import ProjectCard from '@/components/ProjectCard.vue'
 
-const projectStore = useProjectsStore()
-const { projects, loading, error } = storeToRefs(projectStore)
+const projects = ref([])
 
-onMounted(() => {
-  projectStore.fetchProjects()
+onMounted(async () => {
+  try {
+    const response = await fetch('http://localhost/api/projects')
+    projects.value = await response.json()
+  } catch (error) {
+    console.error('Error fetching projects:', error)
+  }
 })
 </script>
 
 <template>
-  <main style="padding: 2rem;">
-    <h1 style="margin-bottom: 1.5rem;">Project Portfolio</h1>
+  <main class="container mx-auto p-6">
+    <h1 class="text-3xl font-bold mb-6">Portfolio Projects</h1>
 
-    <div v-if="loading">Loading projects from backend...</div>
-    <div v-else-if="error" style="color: red;">{{ error }}</div>
-    <div v-else-if="!projects || projects.length === 0">No projects available.</div>
-
-    <ul v-else style="list-style: none; padding: 0;">
-      <li
-        v-for="project in projects"
-        :key="project.id || project.slug || project.uuid"
-        style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1.25rem; margin-bottom: 1rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05);"
-      >
-        <RouterLink
-          :to="{ name: 'project-detail', params: { id: project.id ?? project.slug ?? 1 } }"
-          style="text-decoration: none;"
-        >
-          <h2 style="margin-bottom: 0.5rem; color: #2b6cb0;">{{ project.title }}</h2>
-        </RouterLink>
-        <p style="color: #4a5568;">{{ project.description }}</p>
-      </li>
-    </ul>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <ProjectCard 
+        v-for="project in projects" 
+        :key="project.id" 
+        :project="project" 
+      />
+    </div>
   </main>
 </template>
