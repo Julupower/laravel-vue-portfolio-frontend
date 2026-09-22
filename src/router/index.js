@@ -1,31 +1,28 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '@/views/HomeView.vue'
-import ProjectDetailView from '@/views/ProjectDetailView.vue'
-import LoginView from '@/views/LoginView.vue'
+import HomeView from '../views/HomeView.vue'
+import ProjectsView from '../views/ProjectsView.vue'
+import ProjectDetailView from '../views/ProjectDetailView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: '/',
-      redirect: '/projects',
+      name: 'home',
+      component: HomeView
     },
     {
       path: '/projects',
-      name: 'projects.index',
-      component: HomeView,
+      name: 'projects',
+      component: ProjectsView
     },
     {
       path: '/projects/:id',
-      name: 'project-detail', // Matches the name used inside HomeView.vue's RouterLink
+      name: 'project-detail',
       component: ProjectDetailView,
-    },
-    {
-      path: '/login',
-      name: 'login',
-      component: LoginView,
-    },
-  ],
-})
+      props: true // Automatically passes route.params.id as a prop to the component
+    }
+  ]
+});
 
 export default router

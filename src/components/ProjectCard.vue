@@ -1,23 +1,33 @@
 <template>
-  <div class="project-card border rounded-lg overflow-hidden shadow-sm bg-white">
-    <!-- Featured Image with Fallback -->
-    <img 
-      :src="project.image_url || defaultPlaceholder" 
-      :alt="project.title"
-      class="w-full h-48 object-cover"
-      @error="handleImageError"
-    />
+  <div class="bg-white rounded-lg shadow border border-gray-100 overflow-hidden flex flex-col h-full">
+    <div class="h-48 w-full bg-gray-100 relative overflow-hidden">
+      <img 
+        :src="project.image_url" 
+        :alt="project.title"
+        @error="handleImageError"
+        class="w-full h-full object-cover"
+      />
+    </div>
+    
+    <div class="p-4 flex flex-col flex-grow">
+      <h3 class="text-lg font-semibold text-gray-900 mb-2">
+        <RouterLink 
+          :to="{ name: 'project-detail', params: { id: project.id } }"
+          class="hover:text-blue-600 transition-colors"
+        >
+          {{ project.title }}
+        </RouterLink>
+      </h3>
+      
+      <p class="text-sm text-gray-600 flex-grow mb-4">
+        {{ project.summary }}
+      </p>
 
-    <div class="p-4">
-      <h3 class="text-xl font-bold text-gray-800">{{ project.title }}</h3>
-      <p class="text-gray-600 my-2">{{ project.summary }}</p>
-
-      <!-- Tech Stack Badges -->
-      <div class="flex flex-wrap gap-2 mt-4">
+      <div v-if="project.tech_stack && project.tech_stack.length" class="flex flex-wrap gap-1 mt-auto pt-2 border-t border-gray-50">
         <span 
           v-for="(tech, index) in project.tech_stack" 
           :key="index"
-          class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded"
+          class="px-2 py-0.5 bg-blue-50 text-blue-600 text-xs font-medium rounded"
         >
           {{ tech }}
         </span>
@@ -27,21 +37,14 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-
-const props = defineProps({
+defineProps({
   project: {
     type: Object,
     required: true
   }
 })
 
-// Reliable SVG Data URL fallback to eliminate network dependency
-const defaultPlaceholder = ref(
-  'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600"><rect width="800" height="600" fill="%23e2e8f0"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="28" fill="%2364748b">No Image Available</text></svg>'
-)
-
 const handleImageError = (event) => {
-  event.target.src = defaultPlaceholder.value
+  event.target.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="200" viewBox="0 0 400 200"><rect width="100%" height="100%" fill="%23f3f4f6"/><text x="50%" y="50%" font-family="sans-serif" font-size="14" fill="%239ca3af" text-anchor="middle" dominant-baseline="middle">Image Unavailable</text></svg>'
 }
 </script>
