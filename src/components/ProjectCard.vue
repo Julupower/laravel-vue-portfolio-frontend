@@ -1,16 +1,19 @@
 <script setup>
-defineProps({
-  project: {
-    type: Object,
-    required: true,
-  },
-})
+	defineProps({
+	  project: {
+	    type: Object,
+	    required: true
+	  }
+	});
 
-const getImageUrl = (path) => {
-  if (!path) return 'https://picsum.photos/600/400'
-  if (path.startsWith('http')) return path
-  return `http://localhost/${path.replace(/^\//, '')}`
-}
+	const getImageUrl = (path) => {
+	  if (!path) return 'https://picsum.photos/600/400';
+	  if (path.startsWith('http://') || path.startsWith('https://')) return path;
+
+	  // Clean forward slashes to form valid backend url
+	  const cleanPath = path.startsWith('/') ? path : `/${path}`;
+	  return `http://localhost${cleanPath}`;
+	};
 </script>
 
 <template>
@@ -20,7 +23,7 @@ const getImageUrl = (path) => {
       <div class="w-full h-48 bg-gray-100 overflow-hidden">
         <img 
           :src="getImageUrl(project.image_path)" 
-          :alt="project.title" 
+          :alt="project.title || 'Project Image'" 
           class="w-full h-full object-cover object-center"
         />
       </div>
@@ -31,7 +34,7 @@ const getImageUrl = (path) => {
         <p class="text-gray-600 text-sm mb-4 line-clamp-3">{{ project.description }}</p>
 
         <!-- Tech Stack Badges -->
-        <div v-if="project.tech_stack" class="flex flex-wrap gap-1 mb-4">
+        <div v-if="Array.isArray(project.tech_stack)" class="flex flex-wrap gap-1 mb-4">
           <span 
             v-for="tech in project.tech_stack" 
             :key="tech"
@@ -46,6 +49,7 @@ const getImageUrl = (path) => {
     <!-- Card Footer -->
     <div class="p-5 pt-0 mt-auto">
       <RouterLink 
+        v-if="project.slug"
         :to="{ name: 'projects.show', params: { slug: project.slug } }"
         class="inline-flex items-center text-sm font-semibold text-blue-600 hover:text-blue-800 transition-colors"
       >
