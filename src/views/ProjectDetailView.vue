@@ -63,47 +63,45 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+	import { ref, onMounted } from 'vue';
+	import { useRoute, useRouter } from 'vue-router';
 
-const props = defineProps({
-  id: {
-    type: [String, Number],
-    required: true
-  }
-})
+	const route = useRoute();
+	const router = useRouter();
+	const project = ref(null);
+	const loading = ref(true);
+	const error = ref(null);
 
-const project = ref(null)
-const loading = ref(true)
-const error = ref(null)
+	const fetchProject = async () => {
+	  loading.value = true;
+	  error.value = null;
 
-const fetchProject = async () => {
-  try {
-    loading.value = true
-    error.value = null
-    
-    const response = await fetch(`http://localhost/api/projects/${props.id}`)
-    
-    if (!response.ok) {
-      if (response.status === 404) {
-        throw new Error('Project not found.')
-      }
-      throw new Error('Failed to fetch project details.')
-    }
+	  try {
+	    const response = await fetch(`http://localhost/api/projects/${route.params.slug}`, {
+	      headers: {
+		'Accept': 'application/json'
+	      }
+	    });
 
-    const json = await response.json()
-    project.value = json.data || json
-  } catch (err) {
-    error.value = err.message
-  } finally {
-    loading.value = false
-  }
-}
+	    if (response.status === 404) {
+	      // Direct user to 404 route on missing resource
+	      return router.replace({ name: 'not-found' });
+	    }
 
-const handleImageError = (event) => {
-  event.target.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="800" height="400" viewBox="0 0 800 400"><rect width="100%" height="100%" fill="%23f3f4f6"/><text x="50%" y="50%" font-family="sans-serif" font-size="20" fill="%239ca3af" text-anchor="middle" dominant-baseline="middle">Image Unavailable</text></svg>'
-}
+	    if (!response.ok) {
+	      throw new Error('Failed to load project details.');
+	    }
 
-onMounted(() => {
-  fetchProject()
-})
+	    const json = await response.json();
+	    project.value = json.data;
+	  } catch (err) {
+	    error.value = err.message;
+	  } finally {
+	    loading.value = false;
+	  }
+	};
+
+	onMounted(() => {
+	  fetchProject();
+	});
 </script>
