@@ -1,19 +1,12 @@
 <script setup>
-	defineProps({
-	  project: {
-	    type: Object,
-	    required: true
-	  }
-	});
+import { resolveImageUrl } from '@/services/mediaService';
 
-	const getImageUrl = (path) => {
-	  if (!path) return 'https://picsum.photos/600/400';
-	  if (path.startsWith('http://') || path.startsWith('https://')) return path;
-
-	  // Clean forward slashes to form valid backend url
-	  const cleanPath = path.startsWith('/') ? path : `/${path}`;
-	  return `http://localhost${cleanPath}`;
-	};
+defineProps({
+  project: {
+    type: Object,
+    required: true,
+  },
+});
 </script>
 
 <template>
@@ -22,7 +15,7 @@
       <!-- Featured Image Container -->
       <div class="w-full h-48 bg-gray-100 overflow-hidden">
         <img 
-          :src="getImageUrl(project.image_path)" 
+          :src="resolveImageUrl(project.image_path)" 
           :alt="project.title || 'Project Image'" 
           class="w-full h-full object-cover object-center"
         />
