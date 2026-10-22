@@ -26,7 +26,7 @@ describe('ProjectCard.vue', () => {
       global: globalOptions
     });
 
-    expect(wrapper.text()).toContain('Enterprise Portfolio Engine')
+    expect(wrapper.text()).toContain('Enterprise Portfolio Engine');
   });
 
   it('renders tech stack badges correctly', () => {
@@ -38,5 +38,27 @@ describe('ProjectCard.vue', () => {
     expect(wrapper.text()).toContain('Laravel');
     expect(wrapper.text()).toContain('Vue.js');
     expect(wrapper.text()).toContain('Tailwind CSS');
+  });
+
+  it('correctly resolves image path or uses fallback when null', () => {
+    // Test with valid image path
+    const wrapper = mount(ProjectCard, {
+      props: { project: mockProject },
+      global: globalOptions
+    });
+    
+    const img = wrapper.find('img');
+    expect(img.attributes('src')).toBe('http://localhost/storage/projects/demo.jpg');
+
+    // Test with null image path (should fallback to SVG placeholder)
+    const wrapperWithNoImage = mount(ProjectCard, {
+      props: { 
+        project: { ...mockProject, image_path: null } 
+      },
+      global: globalOptions
+    });
+
+    const fallbackImg = wrapperWithNoImage.find('img');
+    expect(fallbackImg.attributes('src')).toBe('/assets/placeholder-project.svg');
   });
 });
