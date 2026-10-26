@@ -63,58 +63,37 @@
 </template>
 
 <script setup>
-	import { ref, onMounted, watch } from 'vue';
-	import { useRouter } from 'vue-router';
+import { onMounted, watch } from 'vue';
+import { useRouter } from 'vue-router';
+import { useProjectStore } from '@/stores/useProjectStore';
+import { storeToRefs } from 'pinia';
 
-	const props = defineProps({
-	  slug: {
-	    type: String,
-	    required: true
-	  }
-	});
+const props = defineProps({
+  slug: {
+    type: String,
+    required: true
+  }
+});
 
-	const router = useRouter();
-	const project = ref(null);
-	const loading = ref(true);
-	const error = ref(null);
+const router = useRouter();
+const store = useProjectStore();
+const { currentProject: project, loading, error } = storeToRefs(store);
 
-	const fetchProject = async () => {
-	  loading.value = true;
-	  error.value = null;
+const loadProject = async () => {
+  const result = await store.fetchProjectBySlug(props.slug);
+  
+  if (!result && !store.error) {
+    router.replace({ name: 'not-found' });
+  }
+};
 
-	  try {
-	    const response = await fetch(`http://localhost/api/projects/${props.slug}`, {
-	      headers: {
-		'Accept': 'application/json'
-	      }
-	    });
+onMounted(() => {
+  loadProject();
+});
 
-	    if (response.status === 404) {
-	      return router.replace({ name: 'not-found' });
-	    }
-
-	    if (!response.ok) {
-	      throw new Error('Failed to load project details.');
-	    }
-
-	    const json = await response.json();
-	    project.value = json.data;
-	  } catch (err) {
-	    error.value = err.message;
-	  } finally {
-	    loading.value = false;
-	  }
-	};
-
-	// Fetch on initial mount
-	onMounted(() => {
-	  fetchProject();
-	});
-
-	// Re-fetch if the slug prop changes while staying on the same view component
-	watch(() => props.slug, (newSlug) => {
-	  if (newSlug) {
-	    fetchProject();
-	  }
-	});
+watch(() => props.slug, (newSlug) => {
+  if (newSlug) {
+    loadProject();
+  }
+});
 </script>

@@ -1,5 +1,6 @@
 import { mount } from '@vue/test-utils';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { createPinia, setActivePinia } from 'pinia';
 import ProjectDetailView from '@/views/ProjectDetailView.vue';
 
 // Mock vue-router and globally stub RouterLink
@@ -14,20 +15,24 @@ describe('ProjectDetailView.vue', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.unstubAllGlobals();
+    // Initialize a fresh Pinia instance for each test
+    setActivePinia(createPinia());
   });
 
-  it('renders loading state initially', () => {
+  it('renders loading state initially', async () => {
     vi.stubGlobal('fetch', vi.fn().mockImplementation(() => new Promise(() => {})));
 
     const wrapper = mount(ProjectDetailView, {
       props: { slug: 'test-project' },
       global: {
+        plugins: [createPinia()],
         stubs: {
           RouterLink: { template: '<a><slot /></a>' }
         }
       }
     });
 
+    await wrapper.vm.$nextTick();
     expect(wrapper.text()).toContain('Loading project details...');
   });
 
@@ -48,6 +53,7 @@ describe('ProjectDetailView.vue', () => {
     const wrapper = mount(ProjectDetailView, {
       props: { slug: 'enterprise-vue-app' },
       global: {
+        plugins: [createPinia()],
         stubs: {
           RouterLink: { template: '<a><slot /></a>' }
         }
@@ -72,6 +78,7 @@ describe('ProjectDetailView.vue', () => {
     mount(ProjectDetailView, {
       props: { slug: 'non-existent-project' },
       global: {
+        plugins: [createPinia()],
         stubs: {
           RouterLink: { template: '<a><slot /></a>' }
         }
