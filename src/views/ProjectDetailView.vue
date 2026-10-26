@@ -63,10 +63,16 @@
 </template>
 
 <script setup>
-	import { ref, onMounted } from 'vue';
-	import { useRoute, useRouter } from 'vue-router';
+	import { ref, onMounted, watch } from 'vue';
+	import { useRouter } from 'vue-router';
 
-	const route = useRoute();
+	const props = defineProps({
+	  slug: {
+	    type: String,
+	    required: true
+	  }
+	});
+
 	const router = useRouter();
 	const project = ref(null);
 	const loading = ref(true);
@@ -77,14 +83,13 @@
 	  error.value = null;
 
 	  try {
-	    const response = await fetch(`http://localhost/api/projects/${route.params.slug}`, {
+	    const response = await fetch(`http://localhost/api/projects/${props.slug}`, {
 	      headers: {
 		'Accept': 'application/json'
 	      }
 	    });
 
 	    if (response.status === 404) {
-	      // Direct user to 404 route on missing resource
 	      return router.replace({ name: 'not-found' });
 	    }
 
@@ -101,7 +106,15 @@
 	  }
 	};
 
+	// Fetch on initial mount
 	onMounted(() => {
 	  fetchProject();
+	});
+
+	// Re-fetch if the slug prop changes while staying on the same view component
+	watch(() => props.slug, (newSlug) => {
+	  if (newSlug) {
+	    fetchProject();
+	  }
 	});
 </script>
