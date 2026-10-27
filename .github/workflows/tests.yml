@@ -24,4 +24,4 @@ jobs:
         run: npm ci --legacy-peer-deps
 
       - name: Run Vitest Unit Tests
-        run: npx vitest run --pool=node
+        run: npx vitest run --pool=forks
