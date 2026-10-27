@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { useAuthStore } from '@/stores/auth'
+import { useAuthStore } from '@/stores/useAuthStore' // Updated to match your store file name
 
 const authStore = useAuthStore()
 const router = useRouter()
@@ -12,9 +12,13 @@ const form = ref({
 })
 
 const handleSubmit = async () => {
-  await authStore.login(form.value)
-  if (!authStore.error) {
-    router.push('/projects')
+  try {
+    await authStore.login(form.value)
+    // If login succeeds without throwing an error, redirect to admin or projects
+    router.push({ name: 'admin' }) // Or '/projects' depending on your preference
+  } catch (err) {
+    // Error is handled/stored within the store or caught here
+    console.error('Login failed', err)
   }
 }
 </script>
