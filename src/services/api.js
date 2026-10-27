@@ -1,12 +1,14 @@
-import axios from 'axios'
+import axios from 'axios';
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost',
-  withCredentials: true,
-  headers: {
-    'Accept': 'application/json',
-    'Content-Type': 'application/json',
-  },
-})
+    baseURL: '', // This tells Axios to send requests relative to http://localhost:5174, letting Vite's proxy pick them up
+    withCredentials: true,
+    xsrfCookieName: 'XSRF-TOKEN',
+    xsrfHeaderName: 'X-XSRF-TOKEN',
+    headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+    }
+});
 
-export default api
+export default api;

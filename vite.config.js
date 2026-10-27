@@ -4,17 +4,30 @@ import vue from '@vitejs/plugin-vue';
 import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
-  plugins: [
-    vue(),
-    tailwindcss(),
-  ],
-  resolve: {
-    alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url))
+    plugins: [
+        vue(),
+        tailwindcss(),
+    ],
+    resolve: {
+        alias: {
+            '@': fileURLToPath(new URL('./src', import.meta.url))
+        }
+    },
+    server: {
+        port: 5174,
+        proxy: {
+            '/api': {
+                target: 'http://localhost:8000',
+                changeOrigin: true,
+            },
+            '/sanctum': {
+                target: 'http://localhost:8000',
+                changeOrigin: true,
+            }
+        }
+    },
+    test: {
+        globals: true,
+        environment: 'jsdom'
     }
-  },
-  test: {
-    globals: true,
-    environment: 'jsdom'
-  }
-})
+});
