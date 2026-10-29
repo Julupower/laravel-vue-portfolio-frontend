@@ -7,26 +7,69 @@ export const useProjectStore = defineStore('projects', () => {
   const loading = ref(false);
   const error = ref(null);
 
-  const apiBaseUrl = 'http://localhost/api';
+  const graphqlEndpoint = '/graphql';
 
-  // Getters
+  // Normalizer to bridge WordPress GraphQL nodes with UI component expectations
+  const normalizeProject = (node) => {
+    if (!node) return null;
+    return {
+      slug: node.slug,
+      title: node.title,
+      content: node.content,
+      summary: node.excerpt ? node.excerpt.replace(/<[^>]*>?/gm, '') : '', // strip HTML tags from excerpt for summary
+      image_url: node.featuredImage?.node?.sourceUrl || null,
+      tech_stack: node.techStack || []
+    };
+  };
+
   const getProjectBySlug = computed(() => {
     return (slug) => projects.value.find((p) => p.slug === slug);
   });
 
-  // Actions
   async function fetchProjects(forceRefresh = false) {
     if (projects.value.length > 0 && !forceRefresh) return;
 
     loading.value = true;
     error.value = null;
 
+    const query = `
+      query GetProjects {
+        projects {
+          nodes {
+            slug
+            title
+            content
+            excerpt
+            featuredImage {
+              node {
+                sourceUrl
+                altText
+              }
+            }
+          }
+        }
+      }
+    `;
+
     try {
-      const response = await fetch(`${apiBaseUrl}/projects`);
-      if (!response.ok) throw new Error('Failed to fetch projects.');
+      const response = await fetch(graphqlEndpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify({ query }),
+      });
+
+      if (!response.ok) throw new Error('Failed to connect to GraphQL endpoint.');
 
       const json = await response.json();
-      projects.value = json.data || json;
+      if (json.errors) {
+        throw new Error(json.errors[0].message);
+      }
+
+      const nodes = json.data?.projects?.nodes || [];
+      projects.value = nodes.map(normalizeProject);
     } catch (err) {
       error.value = err.message;
     } finally {
@@ -35,7 +78,6 @@ export const useProjectStore = defineStore('projects', () => {
   }
 
   async function fetchProjectBySlug(slug) {
-    // Return cached item if already available
     const cached = getProjectBySlug.value(slug);
     if (cached) {
       currentProject.value = cached;
@@ -45,18 +87,51 @@ export const useProjectStore = defineStore('projects', () => {
     loading.value = true;
     error.value = null;
 
-    try {
-      const response = await fetch(`${apiBaseUrl}/projects/${slug}`)
-
-      if (response.status === 404) {
-        return null;
+    const query = `
+      query GetProjectBySlug($slug: ID!) {
+        project(id: $slug, idType: SLUG) {
+          slug
+          title
+          content
+          excerpt
+          featuredImage {
+            node {
+              sourceUrl
+              altText
+            }
+          }
+        }
       }
+    `;
+
+    try {
+      const response = await fetch(graphqlEndpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify({
+          query,
+          variables: { slug },
+        }),
+      });
 
       if (!response.ok) throw new Error('Failed to fetch project details.');
 
       const json = await response.json();
-      currentProject.value = json.data;
-      return json.data;
+      if (json.errors) {
+        throw new Error(json.errors[0].message);
+      }
+
+      const projectData = json.data?.project;
+      if (!projectData) {
+        return null;
+      }
+
+      const normalized = normalizeProject(projectData);
+      currentProject.value = normalized;
+      return normalized;
     } catch (err) {
       error.value = err.message;
       return null;
@@ -72,6 +147,6 @@ export const useProjectStore = defineStore('projects', () => {
     error,
     getProjectBySlug,
     fetchProjects,
-    fetchProjectBySlug
+    fetchProjectBySlug,
   };
 });
