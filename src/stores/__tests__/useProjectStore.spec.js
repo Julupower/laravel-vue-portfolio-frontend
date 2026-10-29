@@ -8,14 +8,20 @@ describe('useProjectStore', () => {
   });
 
   it('fetches and stores projects successfully', async () => {
-    const mockProjects = [
-      { id: 1, title: 'Project A', slug: 'project-a' },
-      { id: 2, title: 'Project B', slug: 'project-b' }
+    const mockNodes = [
+      { slug: 'project-a', title: 'Project A', content: 'Content A', excerpt: 'Summary A', featuredImage: { node: { sourceUrl: 'http://example.com/a.jpg' } } },
+      { slug: 'project-b', title: 'Project B', content: 'Content B', excerpt: 'Summary B', featuredImage: { node: { sourceUrl: 'http://example.com/b.jpg' } } }
     ];
 
     global.fetch = vi.fn().mockResolvedValue({
       ok: true,
-      json: async () => ({ data: mockProjects })
+      json: async () => ({
+        data: {
+          projects: {
+            nodes: mockNodes
+          }
+        }
+      })
     });
 
     const store = useProjectStore();
@@ -28,7 +34,7 @@ describe('useProjectStore', () => {
 
   it('returns cached project if already fetched', async () => {
     const store = useProjectStore();
-    store.projects = [{ id: 1, title: 'Cached Project', slug: 'cached-project' }];
+    store.projects = [{ slug: 'cached-project', title: 'Cached Project', content: '...', summary: '...', image_url: '...' }];
 
     const project = await store.fetchProjectBySlug('cached-project');
 

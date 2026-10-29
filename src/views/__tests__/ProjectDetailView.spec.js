@@ -15,7 +15,6 @@ describe('ProjectDetailView.vue', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.unstubAllGlobals();
-    // Initialize a fresh Pinia instance for each test
     setActivePinia(createPinia());
   });
 
@@ -37,17 +36,22 @@ describe('ProjectDetailView.vue', () => {
   });
 
   it('renders project details successfully when fetch succeeds', async () => {
-    const mockProject = {
+    const mockNode = {
+      slug: 'enterprise-vue-app',
       title: 'Enterprise Vue App',
-      summary: 'A robust portfolio solution.',
       content: 'Detailed description of the application architecture.',
-      image_url: 'http://localhost/storage/test.jpg',
-      tech_stack: ['Vue 3', 'Laravel']
+      excerpt: 'A robust portfolio solution.',
+      featuredImage: { node: { sourceUrl: 'http://localhost/storage/test.jpg' } },
+      techStack: ['Vue 3', 'Laravel']
     };
 
     vi.stubGlobal('fetch', vi.fn().mockResolvedValueOnce({
       ok: true,
-      json: async () => ({ data: mockProject })
+      json: async () => ({
+        data: {
+          project: mockNode
+        }
+      })
     }));
 
     const wrapper = mount(ProjectDetailView, {
@@ -71,8 +75,12 @@ describe('ProjectDetailView.vue', () => {
 
   it('redirects to not-found when project is missing (404)', async () => {
     vi.stubGlobal('fetch', vi.fn().mockResolvedValueOnce({
-      ok: false,
-      status: 404
+      ok: true,
+      json: async () => ({
+        data: {
+          project: null
+        }
+      })
     }));
 
     mount(ProjectDetailView, {
