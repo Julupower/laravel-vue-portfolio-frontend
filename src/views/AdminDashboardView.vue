@@ -144,7 +144,7 @@ async function saveProject() {
 }
 
 async function deleteProject(slug) {
-  if (confirm('Are you sure you want to delete this project?')) {
+  if (confirm(`Are you sure you want to delete this project (${slug})?`)) {
     // API deletion call + store synchronization
   }
 }

@@ -13,7 +13,7 @@ describe('useProjectStore', () => {
       { slug: 'project-b', title: 'Project B', content: 'Content B', excerpt: 'Summary B', featuredImage: { node: { sourceUrl: 'http://example.com/b.jpg' } } }
     ];
 
-    global.fetch = vi.fn().mockResolvedValue({
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
       ok: true,
       json: async () => ({
         data: {
@@ -22,7 +22,7 @@ describe('useProjectStore', () => {
           }
         }
       })
-    });
+    }));
 
     const store = useProjectStore();
     await store.fetchProjects();
