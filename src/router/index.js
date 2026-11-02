@@ -11,28 +11,48 @@ const routes = [
     path: '/',
     name: 'home',
     component: ProjectListView,
+    meta: {
+      title: 'Portfolio Projects | Laravel & Vue Full-Stack Developer',
+      description: 'Explore enterprise-grade applications and full-stack projects built with Laravel, Vue 3, and Headless WordPress.',
+    },
   },
   {
     path: '/projects/:slug',
     name: 'project-detail',
     component: ProjectDetailView,
     props: true,
+    meta: {
+      title: 'Project Details | Portfolio',
+      description: 'In-depth architectural breakdown and tech stack details for this portfolio project.',
+    },
   },
   {
     path: '/login',
     name: 'login',
     component: LoginView,
+    meta: {
+      title: 'Admin Login | Portfolio',
+      description: 'Restricted administrative access point.',
+    },
   },
   {
     path: '/admin',
     name: 'admin',
     component: AdminDashboardView,
-    meta: { requiresAuth: true }, // Protected route
+    meta: { 
+      requiresAuth: true,
+      title: 'Admin Dashboard | Portfolio',
+      description: 'Manage portfolio projects and system configuration.',
+    },
   },
   {
     path: '/:pathMatch(.*)*',
     name: 'not-found',
     component: NotFound,
+    meta: {
+      title: 'Page Not Found | Portfolio',
+      description: 'The requested page could not be found.',
+    },
   },
 ];
 
@@ -41,20 +61,33 @@ const router = createRouter({
   routes,
 });
 
-// Navigation Guard
+// Navigation Guard for Authentication
 router.beforeEach(async (to, from, next) => {
   const authStore = useAuthStore();
 
-  // If the user isn't loaded yet, try to fetch them via session cookie
   if (!authStore.user && to.meta.requiresAuth) {
     await authStore.fetchUser();
   }
 
   if (to.meta.requiresAuth && !authStore.isAuthenticated) {
-    // Redirect unauthenticated users to the login page
     next({ name: 'login' });
   } else {
     next();
+  }
+});
+
+// Global After-Each Guard for SEO Meta Management
+router.afterEach((to) => {
+  // Update document title
+  const defaultTitle = 'Gerry | Senior Laravel & Vue Developer Portfolio';
+  document.title = to.meta.title || defaultTitle;
+
+  // Update meta description tag dynamically
+  const descriptionMeta = document.querySelector('meta[name="description"]');
+  const defaultDescription = 'Professional portfolio showcasing senior-level Laravel, Vue, and enterprise architecture.';
+  
+  if (descriptionMeta) {
+    descriptionMeta.setAttribute('content', to.meta.description || defaultDescription);
   }
 });
 
