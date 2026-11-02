@@ -18,7 +18,7 @@ const routes = [
   },
   {
     path: '/projects/:slug',
-    name: 'project-detail',
+    name: 'projects.show',
     component: ProjectDetailView,
     props: true,
     meta: {
@@ -78,11 +78,9 @@ router.beforeEach(async (to, from, next) => {
 
 // Global After-Each Guard for SEO Meta Management
 router.afterEach((to) => {
-  // Update document title
   const defaultTitle = 'Gerry | Senior Laravel & Vue Developer Portfolio';
   document.title = to.meta.title || defaultTitle;
 
-  // Update meta description tag dynamically
   const descriptionMeta = document.querySelector('meta[name="description"]');
   const defaultDescription = 'Professional portfolio showcasing senior-level Laravel, Vue, and enterprise architecture.';
   

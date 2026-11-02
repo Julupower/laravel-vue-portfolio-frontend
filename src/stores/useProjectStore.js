@@ -7,18 +7,19 @@ export const useProjectStore = defineStore('projects', () => {
   const loading = ref(false);
   const error = ref(null);
 
-  const graphqlEndpoint = '/graphql';
+  const apiEndpoint = '/api/projects';
 
-  // Normalizer to bridge WordPress GraphQL nodes with UI component expectations
-  const normalizeProject = (node) => {
-    if (!node) return null;
+  // Normalizer to bridge backend project data with UI component expectations
+  const normalizeProject = (item) => {
+    if (!item) return null;
     return {
-      slug: node.slug,
-      title: node.title,
-      content: node.content,
-      summary: node.excerpt ? node.excerpt.replace(/<[^>]*>?/gm, '') : '', // strip HTML tags from excerpt for summary
-      image_url: node.featuredImage?.node?.sourceUrl || null,
-      tech_stack: node.techStack || []
+      id: item.id,
+      slug: item.slug,
+      title: item.title,
+      content: item.content || item.description,
+      summary: item.excerpt || item.description ? (item.excerpt || item.description).replace(/<[^>]*>?/gm, '') : '',
+      image_url: item.image_url || item.featured_image_url || null,
+      tech_stack: item.tech_stack || []
     };
   };
 
@@ -32,44 +33,18 @@ export const useProjectStore = defineStore('projects', () => {
     loading.value = true;
     error.value = null;
 
-    const query = `
-      query GetProjects {
-        projects {
-          nodes {
-            slug
-            title
-            content
-            excerpt
-            featuredImage {
-              node {
-                sourceUrl
-                altText
-              }
-            }
-          }
-        }
-      }
-    `;
-
     try {
-      const response = await fetch(graphqlEndpoint, {
-        method: 'POST',
+      const response = await fetch(apiEndpoint, {
+        method: 'GET',
         headers: {
-          'Content-Type': 'application/json',
           'Accept': 'application/json',
         },
-        body: JSON.stringify({ query }),
       });
 
-      if (!response.ok) throw new Error('Failed to connect to GraphQL endpoint.');
+      if (!response.ok) throw new Error('Failed to fetch projects from server.');
 
-      const json = await response.json();
-      if (json.errors) {
-        throw new Error(json.errors[0].message);
-      }
-
-      const nodes = json.data?.projects?.nodes || [];
-      projects.value = nodes.map(normalizeProject);
+      const data = await response.json();
+      projects.value = Array.isArray(data) ? data.map(normalizeProject) : (data.data || []).map(normalizeProject);
     } catch (err) {
       error.value = err.message;
     } finally {
@@ -87,49 +62,22 @@ export const useProjectStore = defineStore('projects', () => {
     loading.value = true;
     error.value = null;
 
-    const query = `
-      query GetProjectBySlug($slug: ID!) {
-        project(id: $slug, idType: SLUG) {
-          slug
-          title
-          content
-          excerpt
-          featuredImage {
-            node {
-              sourceUrl
-              altText
-            }
-          }
-        }
-      }
-    `;
-
     try {
-      const response = await fetch(graphqlEndpoint, {
-        method: 'POST',
+      const response = await fetch(`${apiEndpoint}/${slug}`, {
+        method: 'GET',
         headers: {
-          'Content-Type': 'application/json',
           'Accept': 'application/json',
         },
-        body: JSON.stringify({
-          query,
-          variables: { slug },
-        }),
       });
 
       if (!response.ok) throw new Error('Failed to fetch project details.');
 
-      const json = await response.json();
-      if (json.errors) {
-        throw new Error(json.errors[0].message);
-      }
-
-      const projectData = json.data?.project;
-      if (!projectData) {
+      const item = await response.json();
+      if (!item) {
         return null;
       }
 
-      const normalized = normalizeProject(projectData);
+      const normalized = normalizeProject(item);
       currentProject.value = normalized;
       return normalized;
     } catch (err) {
