@@ -8,20 +8,14 @@ describe('useProjectStore', () => {
   });
 
   it('fetches and stores projects successfully', async () => {
-    const mockNodes = [
-      { slug: 'project-a', title: 'Project A', content: 'Content A', excerpt: 'Summary A', featuredImage: { node: { sourceUrl: 'http://example.com/a.jpg' } } },
-      { slug: 'project-b', title: 'Project B', content: 'Content B', excerpt: 'Summary B', featuredImage: { node: { sourceUrl: 'http://example.com/b.jpg' } } }
+    const mockProjects = [
+      { slug: 'project-a', title: 'Project A', content: 'Content A', summary: 'Summary A', image_url: 'http://example.com/a.jpg' },
+      { slug: 'project-b', title: 'Project B', content: 'Content B', summary: 'Summary B', image_url: 'http://example.com/b.jpg' }
     ];
 
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
       ok: true,
-      json: async () => ({
-        data: {
-          projects: {
-            nodes: mockNodes
-          }
-        }
-      })
+      json: async () => mockProjects
     }));
 
     const store = useProjectStore();
