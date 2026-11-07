@@ -1,55 +1,115 @@
-# Laravel & Vue 3 Enterprise Portfolio (Frontend)
+Enterprise Portfolio Platform (Laravel API & Vue 3 SPA)
 
-A decoupled, modern Single Page Application (SPA) built with Vue 3, Vite, and Pinia, interfacing with a Laravel 11 backend API. Engineered to enterprise standards featuring dynamic SEO optimization, automated CI/CD pipelines, client-side filtering, and comprehensive unit testing.
+A production-grade, decoupled portfolio platform engineered to demonstrate scalable backend API design, robust asynchronous state management, and rigorous automated testing protocols.
 
-## 🛠 Tech Stack
+🏛️ System Architecture
 
-- **Framework:** Vue 3 (Composition API `<script setup>`)
-- **Build Tool:** Vite
-- **State Management:** Pinia
-- **Routing:** Vue Router (with dynamic meta guards & navigation controls)
-- **HTTP Client:** Axios (configured with CSRF protection)
-- **Testing Suite:** Vitest
-- **CI/CD:** GitHub Actions (Automated Linting & Unit Tests)
-- **Code Quality:** ESLint / Oxlint, Prettier
+The application follows a modern decoupled architecture, separating the RESTful backend API from the reactive single-page application (SPA) frontend. Communication is secured via stateless token handling and strict CORS policies.
 
----
++-----------------------------------------------------------------+
+│                       Client Layer (Vue 3)                      │
+│  +------------------+  +------------------+  +----------------+ │
+│  |   Vue Router     |  | Pinia Store Mgmt |  | Vitest Unit    │ │
+│  +------------------+  +------------------+  +----------------+ │
++----------------------------------+------------------------------+
+                                   │ HTTPS / REST JSON
++----------------------------------v------------------------------+
+│                     Backend API Layer (Laravel)                 │
+│  +------------------+  +------------------+  +----------------+ │
+│  | REST Resources   |  | Sanctum Auth /   |  | PHPUnit /      │ │
+│  | & Controllers    |  | CORS Middleware  │  | Feature Tests  │ │
+│  +------------------+  +------------------+  +----------------+ │
++----------------------------------+------------------------------+
+                                   │ Eloquent ORM
++----------------------------------v------------------------------+
+│                     Persistence Layer (MySQL)                   │
++-----------------------------------------------------------------+
 
-## 🚀 Completed Architectural Milestones
 
-- [x] **Phase 1: Foundation & Base Setup**
-  - Scaffolding with Vue 3, Vite, and Composition API.
-  - Centralized Axios HTTP client instance.
-  - Development server proxying to bypass local CORS boundaries.
-- [x] **Phase 2: State Management & Data Layer**
-  - Centralized Pinia store (`useProjectStore`).
-  - Asynchronous state management handling loading, success, and error boundaries.
-  - Reactive state bindings across UI components.
-- [x] **Phase 3: Dynamic Views & Client-Side Search/Filtering**
-  - Dynamic routing for project showcase and project detail views (`/projects/:slug`).
-  - Sub-millisecond client-side keyword search across titles and summaries.
-  - Real-time technology stack tag filtering via computed properties.
-- [x] **Phase 4: Authentication & Security**
-  - Stateful SPA authentication using Laravel Sanctum CSRF protection.
-  - Route navigation guards restricting unauthorized access to administrative routes (`/admin`).
-- [x] **Phase 5: Automated Testing & CI/CD Infrastructure**
-  - Unit test suite coverage using Vitest for stores, components, services, and routing.
-  - Automated GitHub Actions workflow executing build, linting, and unit test sweeps on pull requests.
-- [x] **Phase 6: Production SEO & Performance Optimization**
-  - Dynamic `document.title` and meta description injection via router navigation guards.
-  - Optimized production build distribution (< 165 kB JS bundle, 227ms build time).
+🚀 Core Technical Highlights
 
----
+Decoupled REST API Design: Laravel backend structured around standard REST resource controllers delivering clean, flat JSON payloads.
 
-## 💻 Local Development Setup
+Reactive State & Routing: Vue 3 Composition API paired with Pinia for predictable state management and Vue Router for dynamic client-side navigation.
 
-### Prerequisites
-- Node.js (v18+ recommended)
-- npm or pnpm
+Rigorous Testing Strategy:
 
-### Installation
+Backend feature and unit test coverage via PHPUnit.
 
-1. Clone the repository:
-   ```bash
-   git clone [https://github.com/Julupower/laravel-vue-portfolio-frontend.git](https://github.com/Julupower/laravel-vue-portfolio-frontend.git)
-   cd laravel-vue-portfolio-frontend
+Frontend unit and component testing via Vitest and Vue Test Utils (100% passing suite).
+
+CI/CD Automation: Fully automated GitHub Actions pipeline validating linting, unit tests, and production build pipelines (vite build) on every push.
+
+Developer Experience: Containerized local development environment utilizing Laravel Sail and Docker.
+
+🛠️ Tech Stack
+
+Backend: PHP 8.2, Laravel 11, MySQL, REST API, PHPUnit
+
+Frontend: Vue 3 (Composition API), Pinia, Vue Router, Tailwind CSS, Vite, Vitest
+
+DevOps & Tooling: Docker, Laravel Sail, GitHub Actions CI/CD
+
+📦 Quick Start & Installation
+
+Ensure you have Docker, Composer, and Node.js (v18+) installed on your local machine.
+
+1. Backend Setup (laravel-vue-portfolio-backend)
+
+git clone https://github.com/Julupower/laravel-vue-portfolio-backend.git
+cd laravel-vue-portfolio-backend
+
+# Install dependencies via composer container
+docker run --rm \
+    -u "$(id -u):$(id -g)" \
+    -v "$(pwd):/var/www/html" \
+    -w /var/www/html \
+    laravelsail/php82-composer:latest composer install
+
+# Configure environment and start Sail containers
+cp .env.example .env
+./vendor/bin/sail up -d
+
+# Generate app key, run migrations, and seed test data
+./vendor/bin/sail artisan key:generate
+./vendor/bin/sail artisan migrate --seed
+
+
+2. Frontend Setup (laravel-vue-portfolio-frontend)
+
+cd ../laravel-vue-portfolio-frontend
+git clone https://github.com/Julupower/laravel-vue-portfolio-frontend.git
+
+# Install dependencies
+npm install
+
+# Configure environment
+cp .env.example .env
+
+# Run development server
+npm run dev
+
+
+🧪 Running the Test Suite
+
+Backend Tests
+
+./vendor/bin/sail artisan test
+
+
+Frontend Tests
+
+npm run test:unit
+
+
+📈 Engineering Decisions & Scalability
+
+Flat REST JSON Over Complex Graphs: Transitioned from initial over-engineered structures to a clean REST resource pattern, drastically reducing payload size and improving client-side rendering efficiency.
+
+Defensive Error Boundaries: Component-level handling for network failures, 404 resource misses, and fallback routing ensure graceful degradation.
+
+Strict CI Gates: No code reaches the main branch without passing automated build and test suites, reflecting production-grade software engineering standards.
+
+📄 License
+
+Distributed under the MIT License. See LICENSE for more information.
