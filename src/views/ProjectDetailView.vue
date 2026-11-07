@@ -1,12 +1,15 @@
 <template>
   <div class="max-w-4xl mx-auto py-8 px-4">
     <!-- Back Navigation Link -->
-    <RouterLink 
+<!--    <RouterLink 
       to="/projects" 
       class="inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-800 mb-6 transition-colors"
     >
       &larr; Back to Portfolio Projects
-    </RouterLink>
+    </RouterLink>-->
+    <router-link :to="{ name: 'home' }" class="text-blue-600 hover:underline">
+        &larr; Back to Portfolio Projects
+    </router-link>
 
     <!-- Loading State -->
     <div v-if="loading" class="text-center py-12">
