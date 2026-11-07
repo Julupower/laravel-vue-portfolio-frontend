@@ -16,7 +16,7 @@ describe('Router Configuration', () => {
   it('resolves the dynamic project detail path and passes the slug prop', async () => {
     await router.push('/projects/test-slug')
     await router.isReady()
-    expect(router.currentRoute.value.name).toBe('project-detail')
+    expect(router.currentRoute.value.name).toBe('projects.show')
     expect(router.currentRoute.value.params.slug).toBe('test-slug')
   })
 
